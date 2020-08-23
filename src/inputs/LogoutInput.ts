@@ -1,10 +1,7 @@
 import { Schema, Is, a } from "@kaviar/validator";
 
 @Schema()
-export class VerifyEmailInput {
+export class LogoutInput {
   @Is(a.string().required())
   token: string;
-
-  @Is(a.string().required())
-  username: string;
 }

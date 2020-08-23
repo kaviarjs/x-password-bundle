@@ -1,16 +1,33 @@
 import { SecurityService } from "@kaviar/security-bundle";
 import { PasswordService } from "@kaviar/password-bundle";
+import { EmailService } from "@kaviar/email-bundle";
+import { Service, Inject } from "@kaviar/core";
+import { InvalidPasswordException } from "../exceptions/InvalidPasswordException";
+import { IXPasswordService } from "./IXPasswordService";
+import { InvalidTokenException } from "../exceptions/InvalidTokenException";
 import { RegistrationInput } from "../inputs/RegistrationInput";
 import { ChangePasswordInput } from "../inputs/ChangePasswordInput";
 import { LoginInput } from "../inputs/LoginInput";
 import { ResetPasswordInput } from "../inputs/ResetPasswordInput";
 import { ForgotPasswordInput } from "../inputs/ForgotPasswordInput";
 import { VerifyEmailInput } from "../inputs/VerifyEmailInput";
+import { Router, APP_ROUTER } from "@kaviar/x-bundle";
+import { IXPasswordBundleConfig } from "../defs";
+import { X_PASSWORD_SETTINGS } from "../constants";
 
-export class XPasswordService {
+const ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split(
+  ""
+);
+@Service()
+export class XPasswordService implements IXPasswordService {
   constructor(
+    @Inject(APP_ROUTER)
+    protected readonly router: Router,
     protected readonly securityService: SecurityService,
-    protected readonly passwordService: PasswordService
+    protected readonly passwordService: PasswordService,
+    protected readonly emailService: EmailService,
+    @Inject(X_PASSWORD_SETTINGS)
+    protected readonly config: IXPasswordBundleConfig
   ) {}
 
   /**
@@ -19,21 +36,45 @@ export class XPasswordService {
    */
   async register(input: RegistrationInput): Promise<{ token: string }> {
     const userId = await this.securityService.createUser();
+    const {
+      requiresEmailVerificationBeforeLoggingIn,
+      emails: { sendEmailVerification, sendWelcomeEmail },
+    } = this.config;
 
     await this.passwordService.attach(userId, {
       username: input.email,
+      email: input.email,
       password: input.password,
+      isEmailVerified: false,
     });
 
     this.securityService.updateUser(userId, {
       name: input.name,
-      isEmailVerified: false,
+      isEnabled: requiresEmailVerificationBeforeLoggingIn ? false : true,
+    });
+
+    // The logic here would be that we send email verification, without welcoming
+    // However if
+    if (sendEmailVerification) {
+      await this.sendEmailVerification(userId, input.name, input.email);
+    }
+
+    // If it's not mandatory to have his email checked and we don't send email verification
+    // we'll send the welcome email. If we do send verification email, the welcome email is sent after email is verified
+    if (
+      sendWelcomeEmail &&
+      !sendEmailVerification &&
+      !requiresEmailVerificationBeforeLoggingIn
+    ) {
+      await this.sendWelcomeEmail(input.name, input.email);
+    }
+
+    const token = await this.securityService.login(userId, {
+      authenticationStrategy: this.passwordService.method,
     });
 
     return {
-      token: await this.securityService.login(userId, {
-        authenticationStrategy: this.passwordService.method,
-      }),
+      token: requiresEmailVerificationBeforeLoggingIn ? null : token,
     };
   }
 
@@ -68,6 +109,8 @@ export class XPasswordService {
           authenticationStrategy: this.passwordService.method,
         }),
       };
+    } else {
+      throw new InvalidPasswordException();
     }
   }
 
@@ -94,20 +137,159 @@ export class XPasswordService {
   }
 
   async forgotPassword(input: ForgotPasswordInput) {
-    const userId = await this.passwordService.findUserIdByUsername(
-      input.username
-    );
+    const userId = await this.passwordService.findUserIdByUsername(input.email);
+
+    if (userId) {
+      // We don't want to expose if we have the user or not, so we "silently" fail
+      // We want to emulate some "time" passing so they don't do time-based analysis of user email detection
+      await sleep(150);
+      return;
+    }
 
     const token = await this.passwordService.createTokenForPasswordReset(
       userId
     );
 
-    return {
-      token,
-    };
+    const {
+      emails: { regardsName, paths, templates },
+    } = this.config;
+
+    // This will run in the background, we do not await on emails
+    this.emailService.send(
+      {
+        component: templates.forgotPassword,
+        props: {
+          username: input.email,
+          name: name,
+          regardsName: regardsName,
+          resetPasswordUrl: this.router.path(paths.resetPasswordPath, {
+            token,
+          }),
+        },
+      },
+      {
+        to: input.email,
+      }
+    );
   }
 
   async verifyEmail(input: VerifyEmailInput) {
-    // TODO:
+    const userId = await this.passwordService.findUserIdByUsername(
+      input.username
+    );
+
+    const userPasswordData = await this.passwordService.getData(userId, {
+      emailVerificationToken: 1,
+    });
+
+    if (input.token === userPasswordData.emailVerificationToken) {
+      // When token matches successfully
+      await this.passwordService.updateData(userId, {
+        isEmailVerified: true,
+        emailVerificationToken: null,
+      });
+
+      const { requiresEmailVerificationBeforeLoggingIn } = this.config;
+      if (requiresEmailVerificationBeforeLoggingIn) {
+        await this.securityService.updateUser(userId, {
+          isEnabled: true,
+        });
+      }
+
+      if (this.config.emails.sendWelcomeEmail) {
+        const userData = await this.securityService.findUserById(userId, {
+          name: 1,
+        });
+
+        this.sendWelcomeEmail(userData.name, input.username);
+      }
+    } else {
+      throw new InvalidTokenException({
+        context: "email-verification",
+      });
+    }
+
+    return {
+      token: await this.securityService.login(userId, {
+        authenticationStrategy: this.passwordService.method,
+      }),
+    };
   }
+
+  /**
+   * This function will generate a token and send for validation via email verification. It can be later verified using verifyEmail method
+   * @param userId The id of the user
+   * @param name The name of the user
+   * @param email
+   */
+  async sendEmailVerification(userId: any, name: string, email: string) {
+    const token = this.generateToken(32);
+    this.passwordService.updateData(userId, {
+      emailVerificationToken: token,
+    });
+
+    const {
+      emails: { regardsName, paths, templates },
+    } = this.config;
+
+    // This will run in the background
+    this.emailService.send(
+      {
+        component: templates.verifyEmail,
+        props: {
+          name: name,
+          regardsName: regardsName,
+          verifyEmailUrl: this.router.path(paths.verifyEmailPath, { token }),
+        },
+      },
+      {
+        to: email,
+      }
+    );
+  }
+
+  /**
+   * This function will generate a token and send for validation via email verification. It can be later verified using verifyEmail method
+   * @param userId The id of the user
+   * @param name The name of the user
+   * @param email
+   */
+  async sendWelcomeEmail(name: string, email: string) {
+    const {
+      emails: { regardsName, paths, templates, applicationName },
+    } = this.config;
+
+    // This will run in the background
+    this.emailService.send(
+      {
+        component: templates.welcome,
+        props: {
+          name: name,
+          applicationName: applicationName,
+          regardsName: regardsName,
+          welcomeUrl: this.router.path(paths.welcomePath),
+        },
+      },
+      {
+        to: email,
+      }
+    );
+  }
+
+  /**
+   * Generates the token for email validation and maybe others
+   * @param length
+   */
+  generateToken(length) {
+    var b = [];
+    for (var i = 0; i < length; i++) {
+      var j = (Math.random() * (ALLOWED_CHARS.length - 1)).toFixed(0);
+      b[i] = ALLOWED_CHARS[j];
+    }
+    return b.join("");
+  }
+}
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
 }

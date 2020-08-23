@@ -5,6 +5,7 @@ export interface IForgotPasswordEmailProps {
   username: string;
   name: string;
   resetPasswordUrl: string;
+  regardsName: string;
 }
 
 export const ForgotPasswordEmail: IReactEmailTemplate<IForgotPasswordEmailProps> = (
@@ -22,7 +23,11 @@ export const ForgotPasswordEmail: IReactEmailTemplate<IForgotPasswordEmailProps>
     </p>
     <p>
       Regards, <br />
-      Kaviar Team
+      {props.regardsName}
     </p>
   </div>
 );
+
+ForgotPasswordEmail.subject = (props) => {
+  return `You have requested a password reset!`;
+};

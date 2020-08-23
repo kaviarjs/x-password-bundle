@@ -41,6 +41,7 @@ export class EmailListener extends Listener {
           }),
           name,
           username: email,
+          regardsName: this.settings.emails.regardsName,
         },
       },
       {

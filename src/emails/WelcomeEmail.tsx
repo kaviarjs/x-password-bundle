@@ -2,9 +2,10 @@ import React from "react";
 import { IReactEmailTemplate } from "@kaviar/email-bundle";
 
 export interface IWelcomeEmailProps {
-  username: string;
   name: string;
   applicationName: string;
+  regardsName: string;
+  welcomeUrl: string;
 }
 
 export const WelcomeEmail: IReactEmailTemplate<IWelcomeEmailProps> = (
@@ -12,10 +13,20 @@ export const WelcomeEmail: IReactEmailTemplate<IWelcomeEmailProps> = (
 ) => (
   <div>
     <p>Hello {props.name},</p>
-    <p>Welcome to {props.applicationName}!</p>
+
+    <p>A warm Welcome to {props.applicationName}!</p>
+    <p>
+      Feel free to access the application:
+      <br />
+      <a href={props.welcomeUrl}>{props.welcomeUrl}</a>
+    </p>
     <p>
       Regards, <br />
-      Kaviar Team
+      {props.regardsName}
     </p>
   </div>
 );
+
+WelcomeEmail.subject = (props) => {
+  return `Welcome to ${props.applicationName}, ${props.name}!`;
+};

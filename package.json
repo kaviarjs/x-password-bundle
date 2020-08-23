@@ -1,11 +1,12 @@
 {
   "name": "@kaviar/x-password-bundle",
   "version": "1.0.0",
-  "description": "Kaviar Template",
+  "private": true,
+  "description": "Password integration with Apollo Bundle using X-way.",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
-    "url": "https://github.com/kaviarjs/template"
+    "url": "https://github.com/kaviarjs/x-password-bundle"
   },
   "scripts": {
     "compile": "tsc",
