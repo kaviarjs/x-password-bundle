@@ -5,7 +5,6 @@ import { ResetPasswordInput } from "../inputs/ResetPasswordInput";
 import { ForgotPasswordInput } from "../inputs/ForgotPasswordInput";
 import { VerifyEmailInput } from "../inputs/VerifyEmailInput";
 import { XPasswordService } from "../services/XPasswordService";
-import { execute } from "@kaviar/executor";
 import { LogoutInput } from "../inputs/LogoutInput";
 import { ChangePasswordInput } from "../inputs/ChangePasswordInput";
 import { IXPasswordBundleConfig } from "../defs";
@@ -77,6 +76,6 @@ export default (config: IXPasswordBundleConfig) => {
   }
 
   return {
-    Mutation: execute(resolvers),
+    Mutation: resolvers,
   };
 };

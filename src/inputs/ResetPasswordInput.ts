@@ -1,4 +1,4 @@
-import { Schema, Is, a } from "@kaviar/validator";
+import { Schema, Is, a } from "@kaviar/validator-bundle";
 
 @Schema()
 export class ResetPasswordInput {

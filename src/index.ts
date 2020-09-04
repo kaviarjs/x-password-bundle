@@ -1,3 +1,4 @@
+import "./defs";
 export { IXPasswordService } from "./services/IXPasswordService";
 export * from "./constants";
 export * from "./inputs";

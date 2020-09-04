@@ -5,7 +5,16 @@ import { IForgotPasswordEmailProps } from "./emails/ForgotPasswordEmail";
 import { IWelcomeEmailProps } from "./emails/WelcomeEmail";
 import { IResetPasswordConfirmationEmailProps } from "./emails";
 import { IVerifyEmailProps } from "./emails/VerifyEmail";
-export { IXPasswordService };
+import "@kaviar/security-bundle";
+import "@kaviar/password-bundle";
+import { IPasswordAuthenticationStrategy } from "@kaviar/password-bundle";
+
+declare module "@kaviar/security-bundle" {
+  export interface IUser {
+    name: string;
+    password: IPasswordAuthenticationStrategy;
+  }
+}
 
 export interface IXPasswordBundleConfig {
   services: {

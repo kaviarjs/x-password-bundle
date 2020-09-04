@@ -66,6 +66,7 @@ export class XPasswordBundle extends Bundle<IXPasswordBundleConfig> {
   async init() {
     this.container.get(XPasswordService);
     const graphqlModule = createGraphQLModule(this.config);
+
     this.container.get<Loader>(Loader).load(graphqlModule);
   }
 }
