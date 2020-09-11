@@ -1,11 +1,12 @@
 import { Bundle } from "@kaviar/core";
+import { Loader } from "@kaviar/graphql-bundle";
+import { SecurityBundle } from "@kaviar/security-bundle";
+import { PasswordBundle } from "@kaviar/password-bundle";
+
 import { IXPasswordBundleConfig } from "./defs";
 import { X_PASSWORD_SETTINGS } from "./constants";
 import { createGraphQLModule } from "./graphql";
-import { Loader } from "@kaviar/apollo-bundle";
 import { XPasswordService } from "./services/XPasswordService";
-import { SecurityBundle } from "@kaviar/security-bundle";
-import { PasswordBundle } from "@kaviar/password-bundle";
 import { VerifyEmail } from "./emails/VerifyEmail";
 import {
   ForgotPasswordEmail,
@@ -61,12 +62,15 @@ export class XPasswordBundle extends Bundle<IXPasswordBundleConfig> {
         type: this.config.services.XPasswordService,
       });
     }
+
+    const graphqlModule = createGraphQLModule(this.config);
+
+    const loader = this.container.get<Loader>(Loader);
+    loader.load(graphqlModule);
   }
 
   async init() {
+    // Ensure it's initialised and ready to serve
     this.container.get(XPasswordService);
-    const graphqlModule = createGraphQLModule(this.config);
-
-    this.container.get<Loader>(Loader).load(graphqlModule);
   }
 }

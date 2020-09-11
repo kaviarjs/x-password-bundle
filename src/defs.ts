@@ -11,8 +11,11 @@ import { IPasswordAuthenticationStrategy } from "@kaviar/password-bundle";
 
 declare module "@kaviar/security-bundle" {
   export interface IUser {
-    name: string;
     password: IPasswordAuthenticationStrategy;
+    profile: IUserProfile;
+  }
+  export interface IUserProfile {
+    name: string;
   }
 }
 

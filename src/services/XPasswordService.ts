@@ -49,7 +49,9 @@ export class XPasswordService implements IXPasswordService {
     });
 
     this.securityService.updateUser(userId, {
-      name: input.name,
+      profile: {
+        name,
+      },
       isEnabled: requiresEmailVerificationBeforeLoggingIn ? false : true,
     });
 
@@ -198,10 +200,10 @@ export class XPasswordService implements IXPasswordService {
 
       if (this.config.emails.sendWelcomeEmail) {
         const userData = await this.securityService.findUserById(userId, {
-          name: 1,
+          profile: 1,
         });
 
-        this.sendWelcomeEmail(userData.name, input.username);
+        this.sendWelcomeEmail(userData.profile.name, input.username);
       }
     } else {
       throw new InvalidTokenException({
