@@ -5,6 +5,7 @@ node_js:
 install:
   - npm install -g coveralls
   - npm install
+  - npm install @kaviar/logger-bundle
 
 script:
   - npm test
