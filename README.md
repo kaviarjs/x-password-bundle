@@ -1,29 +1,25 @@
-# X Password Bundle
+<h1 align="center">KAVIAR SECURITY-MONGO-BUNDLE</h1>
 
-- Ensure there is a `me` query that can properly fetch username, email, isEmailVerified, name, etc
+<p align="center">
+  <a href="https://travis-ci.org/kaviarjs/x-password-bundle">
+    <img src="https://api.travis-ci.org/kaviarjs/x-password-bundle.svg?branch=master" />
+  </a>
+  <a href="https://coveralls.io/github/kaviarjs/x-password-bundle?branch=master">
+    <img src="https://coveralls.io/repos/github/kaviarjs/x-password-bundle/badge.svg?branch=master" />
+  </a>
+</p>
 
-```typescript
-new XPasswordBundle({
-  emails: {
-    emailCheck: EmailCheck
-    welcome: WelcomeEmail,
-    forgotPassword: ForgotPasswordEmail,
-    resetPassword,
-    accountLockedInvalidPasswordAttempts,
-    accountDisabled,
-  },
-  graphql: {
-    queries: {
-    mutations: {
-      register,
-      login,
-      resetPassword,
-      forgotPassword,
-      verifyEmail,
-    },
-  },
-});
+This is the X-way of handling password authentication blended with GraphQL.
+
+## Install
+
+```bash
+npm install --save @kaviar/x-password-bundle
 ```
+
+## [Documentation](./DOCUMENTATION.md)
+
+[Click here to go to the documentation](./DOCUMENTATION.md)
 
 ## Support
 
