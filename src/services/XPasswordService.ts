@@ -18,6 +18,11 @@ import { X_PASSWORD_SETTINGS } from "../constants";
 const ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split(
   ""
 );
+
+function sleep(ms) {
+  return new Promise((resolve) => setTimeout(resolve, ms));
+}
+
 @Service()
 export class XPasswordService implements IXPasswordService {
   constructor(
@@ -50,7 +55,7 @@ export class XPasswordService implements IXPasswordService {
 
     this.securityService.updateUser(userId, {
       profile: {
-        name,
+        name: input.name,
       },
       isEnabled: requiresEmailVerificationBeforeLoggingIn ? false : true,
     });
@@ -162,7 +167,6 @@ export class XPasswordService implements IXPasswordService {
         component: templates.forgotPassword,
         props: {
           username: input.email,
-          name: name,
           regardsName: regardsName,
           resetPasswordUrl: this.router.path(paths.resetPasswordPath, {
             token,
@@ -283,15 +287,11 @@ export class XPasswordService implements IXPasswordService {
    * @param length
    */
   generateToken(length) {
-    var b = [];
-    for (var i = 0; i < length; i++) {
-      var j = (Math.random() * (ALLOWED_CHARS.length - 1)).toFixed(0);
+    const b = [];
+    for (let i = 0; i < length; i++) {
+      const j = (Math.random() * (ALLOWED_CHARS.length - 1)).toFixed(0);
       b[i] = ALLOWED_CHARS[j];
     }
     return b.join("");
   }
-}
-
-function sleep(ms) {
-  return new Promise((resolve) => setTimeout(resolve, ms));
 }

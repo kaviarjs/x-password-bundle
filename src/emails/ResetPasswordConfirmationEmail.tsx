@@ -1,4 +1,4 @@
-import React from "react";
+import * as React from "react";
 import { IReactEmailTemplate } from "@kaviar/email-bundle";
 
 export interface IResetPasswordConfirmationEmailProps {
