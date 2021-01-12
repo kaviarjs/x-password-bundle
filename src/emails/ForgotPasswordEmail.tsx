@@ -3,6 +3,7 @@ import { IReactEmailTemplate } from "@kaviar/email-bundle";
 
 export interface IForgotPasswordEmailProps {
   username: string;
+  name: string;
   resetPasswordUrl: string;
   regardsName: string;
 }
@@ -11,7 +12,7 @@ export const ForgotPasswordEmail: IReactEmailTemplate<IForgotPasswordEmailProps>
   props
 ) => (
   <div>
-    <p>Hello,</p>
+    <p>Hello {props.name},</p>
     <p>
       You have requested to reset your password for username: {props.username}.
     </p>

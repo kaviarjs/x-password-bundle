@@ -166,6 +166,7 @@ export class XPasswordService implements IXPasswordService {
       {
         component: templates.forgotPassword,
         props: {
+          name: input.email,
           username: input.email,
           regardsName: regardsName,
           resetPasswordUrl: this.router.path(paths.resetPasswordPath, {
