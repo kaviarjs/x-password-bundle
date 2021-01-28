@@ -14,6 +14,7 @@ import { VerifyEmailInput } from "../inputs/VerifyEmailInput";
 import { Router, APP_ROUTER } from "@kaviar/x-bundle";
 import { IXPasswordBundleConfig } from "../defs";
 import { X_PASSWORD_SETTINGS } from "../constants";
+import { InvalidUsernameException } from "../exceptions/InvalidUsernameException";
 
 const ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split(
   ""
@@ -53,7 +54,7 @@ export class XPasswordService implements IXPasswordService {
       isEmailVerified: false,
     });
 
-    this.securityService.updateUser(userId, {
+    await this.securityService.updateUser(userId, {
       profile: {
         name: input.name,
       },
@@ -105,6 +106,11 @@ export class XPasswordService implements IXPasswordService {
     const userId = await this.passwordService.findUserIdByUsername(
       input.username
     );
+
+    if (!userId) {
+      throw new InvalidUsernameException({ username: input.username });
+    }
+
     const isValid = await this.passwordService.isPasswordValid(
       userId,
       input.password
