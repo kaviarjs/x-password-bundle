@@ -23,7 +23,7 @@
   },
   "dependencies": {},
   "peerDependencies": {
-    "@kaviar/core": "^1.0.2",
+    "@kaviar/core": "^1.1.1",
     "@kaviar/security-bundle": "^1.0.0",
     "@kaviar/security-mongo-bundle": "^1.0.0",
     "@kaviar/password-bundle": "^1.0.0",
@@ -35,9 +35,9 @@
   },
   "devDependencies": {
     "@kaviar/mongo-bundle": "^1.0.1",
-    "@kaviar/nova": "^1.3.0",
+    "@kaviar/nova": "^1.3.1",
     "@kaviar/graphql-bundle": "^1.0.0",
-    "@kaviar/core": "^1.0.2",
+    "@kaviar/core": "^1.1.1",
     "@kaviar/email-bundle": "^1.0.0",
     "@kaviar/password-bundle": "^1.0.0",
     "@kaviar/security-bundle": "^1.0.0",

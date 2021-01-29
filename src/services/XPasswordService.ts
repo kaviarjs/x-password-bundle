@@ -152,7 +152,7 @@ export class XPasswordService implements IXPasswordService {
   async forgotPassword(input: ForgotPasswordInput) {
     const userId = await this.passwordService.findUserIdByUsername(input.email);
 
-    if (userId) {
+    if (!userId) {
       // We don't want to expose if we have the user or not, so we "silently" fail
       // We want to emulate some "time" passing so they don't do time-based analysis of user email detection
       await sleep(150);
