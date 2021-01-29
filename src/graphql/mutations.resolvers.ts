@@ -52,7 +52,6 @@ export default (config: IXPasswordBundleConfig) => {
 
   if (mutations.resetPassword) {
     resolvers.resetPassword = [
-      X.CheckLoggedIn(),
       X.ToModel(ResetPasswordInput),
       X.Validate(),
       X.ToService(XPasswordService, "resetPassword"),
