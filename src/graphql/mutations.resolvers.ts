@@ -46,7 +46,9 @@ export default (config: IXPasswordBundleConfig) => {
       X.CheckLoggedIn(),
       X.ToModel(LogoutInput),
       X.Validate(),
-      X.ToService(XPasswordService, "logout"),
+      X.ToService(XPasswordService, "logout", (args, ctx, any) => {
+        return [ctx.authenticationToken];
+      }),
     ];
   }
 

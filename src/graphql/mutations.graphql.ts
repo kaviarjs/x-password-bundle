@@ -61,15 +61,7 @@ export default (config: IXPasswordBundleConfig) => {
     );
   }
   if (mutations.logout) {
-    output = mutation(
-      output,
-      /* GraphQL */ `logout(input: LogoutInput!): Boolean`,
-      /* GraphQL */ `
-        input LogoutInput {
-          token: String!
-        }
-      `
-    );
+    output = mutation(output, /* GraphQL */ `logout: Boolean`);
   }
   if (mutations.resetPassword) {
     output = mutation(

@@ -127,8 +127,8 @@ export class XPasswordService implements IXPasswordService {
     }
   }
 
-  async logout(input) {
-    await this.securityService.logout(input.token);
+  async logout(token) {
+    await this.securityService.logout(token);
   }
 
   async resetPassword(input: ResetPasswordInput) {
