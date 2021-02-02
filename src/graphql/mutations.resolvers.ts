@@ -5,7 +5,6 @@ import { ResetPasswordInput } from "../inputs/ResetPasswordInput";
 import { ForgotPasswordInput } from "../inputs/ForgotPasswordInput";
 import { VerifyEmailInput } from "../inputs/VerifyEmailInput";
 import { XPasswordService } from "../services/XPasswordService";
-import { LogoutInput } from "../inputs/LogoutInput";
 import { ChangePasswordInput } from "../inputs/ChangePasswordInput";
 import { IXPasswordBundleConfig } from "../defs";
 
@@ -44,8 +43,6 @@ export default (config: IXPasswordBundleConfig) => {
   if (mutations.logout) {
     resolvers.logout = [
       X.CheckLoggedIn(),
-      X.ToModel(LogoutInput),
-      X.Validate(),
       X.ToService(XPasswordService, "logout", (args, ctx, any) => {
         return [ctx.authenticationToken];
       }),

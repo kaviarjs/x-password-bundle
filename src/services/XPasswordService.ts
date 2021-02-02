@@ -15,6 +15,7 @@ import { Router, APP_ROUTER } from "@kaviar/x-bundle";
 import { IXPasswordBundleConfig } from "../defs";
 import { X_PASSWORD_SETTINGS } from "../constants";
 import { InvalidUsernameException } from "../exceptions/InvalidUsernameException";
+import { UsernameAlreadyExistsException } from "../exceptions";
 
 const ALLOWED_CHARS = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ1234567890".split(
   ""
@@ -41,6 +42,12 @@ export class XPasswordService implements IXPasswordService {
    * @param input
    */
   async register(input: RegistrationInput): Promise<{ token: string }> {
+    const existingUserId = await this.passwordService.findUserIdByUsername(
+      input.email
+    );
+    if (existingUserId) {
+      throw new UsernameAlreadyExistsException();
+    }
     const userId = await this.securityService.createUser();
     const {
       requiresEmailVerificationBeforeLoggingIn,

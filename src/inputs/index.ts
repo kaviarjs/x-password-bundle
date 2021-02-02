@@ -4,4 +4,3 @@ export * from "./LoginInput";
 export * from "./RegistrationInput";
 export * from "./ResetPasswordInput";
 export * from "./VerifyEmailInput";
-export * from "./LogoutInput";
