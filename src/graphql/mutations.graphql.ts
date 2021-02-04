@@ -18,7 +18,8 @@ export default (config: IXPasswordBundleConfig) => {
       /* GraphQL */ `register(input: RegistrationInput!): RegistrationResponse!`,
       /* GraphQL */ `
         input RegistrationInput {
-          name: String!
+          firstName: String!
+          lastName: String!
           email: String!
           password: String!
         }

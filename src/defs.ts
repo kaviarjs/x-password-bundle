@@ -15,7 +15,9 @@ declare module "@kaviar/security-bundle" {
     profile: IUserProfile;
   }
   export interface IUserProfile {
-    name: string;
+    firstName: string;
+    lastName: string;
+    middleName: string;
   }
 }
 
@@ -27,9 +29,7 @@ export interface IXPasswordBundleConfig {
     templates: {
       welcome: IReactEmailTemplate<IWelcomeEmailProps>;
       forgotPassword: IReactEmailTemplate<IForgotPasswordEmailProps>;
-      resetPasswordConfirmation: IReactEmailTemplate<
-        IResetPasswordConfirmationEmailProps
-      >;
+      resetPasswordConfirmation: IReactEmailTemplate<IResetPasswordConfirmationEmailProps>;
       verifyEmail: IReactEmailTemplate<IVerifyEmailProps>;
     };
     paths: {

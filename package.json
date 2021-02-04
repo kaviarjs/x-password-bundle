@@ -27,7 +27,7 @@
     "@kaviar/security-bundle": "^1.0.0",
     "@kaviar/security-mongo-bundle": "^1.0.0",
     "@kaviar/password-bundle": "^1.0.0",
-    "@kaviar/graphql-bundle": "^1.0.0",
+    "@kaviar/graphql-bundle": "^1.1.0",
     "@kaviar/mongo-bundle": "^1.0.1",
     "@kaviar/email-bundle": "^1.0.0",
     "@kaviar/validator-bundle": "^1.0.0",

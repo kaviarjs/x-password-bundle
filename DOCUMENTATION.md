@@ -52,6 +52,24 @@ new XPasswordBundle({
 });
 ```
 
+## Registration Flow
+
+- User registers with `firstName`, `lastName`, `email` and `password`
+- We assume that the username will be the email. This can be customised by you.
+- If verify email is enabled, the `VerifyEmail` will be sent (if `sendEmailVerification` )
+  - After the email gets verified, the `WelcomeEmail` is sent (if `sendWelcomeEmail` is enabled)
+- If verify email is disabled and `sendWelcomeEmail` is enabled, the `WelcomeEmail` will be initially sent.
+
+By default user is able to login without having the email verified. However, using the `emails.requiresEmailVerificationBeforeLoggingIn` config on the bundle, this will not be an option. The `register` will return a null token and user cannot login until his email gets verified.
+
+This is done by playing with `isEnabled` from `IUser` which doesn't allow the user to login.
+
+After email gets verified, `isEnabled` is marked as true.
+
+:::caution
+If you later introduce processes of email verification (like when he changes the email, etc) please note that we mark `isEnabled` to true. So if you have suspended the user and somehow he can request an email verification, be careful.
+:::
+
 ### Urls
 
 You can also modify the paths based on the X-Framework application url:
@@ -85,7 +103,7 @@ new XPasswordBundle({
 })
 ```
 
-## Mutations & Queries
+## Mutations
 
 Once you added this bundle, you will see some mutations appearing in your GraphQL docs, these can be toggled on/off using this:
 
@@ -102,6 +120,54 @@ export interface IXPasswordBundleConfig {
       forgotPassword: boolean;
       verifyEmail: boolean;
     };
+  };
+}
+```
+
+## Custom Registration
+
+By default registration accepts `firstName`, `lastName`, `email` and `password`. If you have a more complex registration, we recommend disabling `register` mutation as shown above and implement your own:
+
+```graphql
+input RegisterInput {
+  email: String!
+  password: String!
+  firstName: String!
+  lastName: String!
+}
+
+type RegisterResponse {
+  token: String
+}
+
+type Mutation {
+  register(input: RegisterInput!): RegisterResponse
+}
+```
+
+```ts
+import { IGraphQLContext, InputType } from "@kaviar/graphql-bundle";
+import { RegisterInput } from "@kaviar/graphql-bundle";
+
+class MyCustomInput extends RegisterInput {
+  age: string;
+}
+
+function register(_, args: InputType<RegisterInput>, context: IGraphQLContext) {
+  const { input } = args;
+  const xPasswordService = context.container.get(XPasswordService);
+
+  const { email, password, firstName, lastName } = input;
+  const { userId, token } = xPasswordService.register({
+    email,
+    password,
+    firstName,
+    lastName,
+  });
+
+  // Do additional operations, call another service with the "age" part.
+  return {
+    token,
   };
 }
 ```

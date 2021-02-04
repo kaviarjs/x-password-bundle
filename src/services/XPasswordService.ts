@@ -38,10 +38,12 @@ export class XPasswordService implements IXPasswordService {
   ) {}
 
   /**
-   * Registers the user with email as username and
+   * Registers the user with email as username.
    * @param input
    */
-  async register(input: RegistrationInput): Promise<{ token: string }> {
+  async register(
+    input: RegistrationInput
+  ): Promise<{ token: string; userId: any }> {
     const existingUserId = await this.passwordService.findUserIdByUsername(
       input.email
     );
@@ -63,7 +65,8 @@ export class XPasswordService implements IXPasswordService {
 
     await this.securityService.updateUser(userId, {
       profile: {
-        name: input.name,
+        firstName: input.firstName,
+        lastName: input.lastName,
       },
       isEnabled: requiresEmailVerificationBeforeLoggingIn ? false : true,
     });
@@ -71,7 +74,7 @@ export class XPasswordService implements IXPasswordService {
     // The logic here would be that we send email verification, without welcoming
     // However if
     if (sendEmailVerification) {
-      await this.sendEmailVerification(userId, input.name, input.email);
+      await this.sendEmailVerification(userId, input.firstName, input.email);
     }
 
     // If it's not mandatory to have his email checked and we don't send email verification
@@ -81,14 +84,18 @@ export class XPasswordService implements IXPasswordService {
       !sendEmailVerification &&
       !requiresEmailVerificationBeforeLoggingIn
     ) {
-      await this.sendWelcomeEmail(input.name, input.email);
+      await this.sendWelcomeEmail(input.firstName, input.email);
     }
 
-    const token = await this.securityService.login(userId, {
-      authenticationStrategy: this.passwordService.method,
-    });
+    let token = null;
+    if (!requiresEmailVerificationBeforeLoggingIn) {
+      token = await this.securityService.login(userId, {
+        authenticationStrategy: this.passwordService.method,
+      });
+    }
 
     return {
+      userId,
       token: requiresEmailVerificationBeforeLoggingIn ? null : token,
     };
   }
@@ -193,7 +200,7 @@ export class XPasswordService implements IXPasswordService {
     );
   }
 
-  async verifyEmail(input: VerifyEmailInput) {
+  async verifyEmail(input: VerifyEmailInput): Promise<{ token: string }> {
     const userId = await this.passwordService.findUserIdByUsername(
       input.username
     );
@@ -221,7 +228,7 @@ export class XPasswordService implements IXPasswordService {
           profile: 1,
         });
 
-        this.sendWelcomeEmail(userData.profile.name, input.username);
+        this.sendWelcomeEmail(userData.profile.firstName, input.username);
       }
     } else {
       throw new InvalidTokenException({

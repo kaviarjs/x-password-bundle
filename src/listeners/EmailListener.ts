@@ -59,7 +59,7 @@ export class EmailListener extends Listener {
     const user = await this.securityService.findUserById(userId);
 
     return {
-      name: user.profile?.name,
+      name: user.profile?.firstName,
       email: user.password?.username,
     };
   }
