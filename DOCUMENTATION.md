@@ -147,7 +147,7 @@ type Mutation {
 
 ```ts
 import { IGraphQLContext, InputType } from "@kaviar/graphql-bundle";
-import { RegisterInput } from "@kaviar/graphql-bundle";
+import { RegisterInput, XPasswordService } from "@kaviar/x-password-bundle";
 
 class MyCustomInput extends RegisterInput {
   age: string;
