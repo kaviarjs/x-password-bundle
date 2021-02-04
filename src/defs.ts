@@ -17,7 +17,6 @@ declare module "@kaviar/security-bundle" {
   export interface IUserProfile {
     firstName: string;
     lastName: string;
-    middleName: string;
   }
 }
 
