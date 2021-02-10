@@ -8,7 +8,10 @@ import { XPasswordService } from "../services/XPasswordService";
 import { ChangePasswordInput } from "../inputs/ChangePasswordInput";
 import { IXPasswordBundleConfig } from "../defs";
 import { IFunctionMap } from "@kaviar/graphql-bundle";
-import { SecurityService } from "@kaviar/security-bundle";
+import {
+  UsersCollection,
+  USERS_COLLECTION_TOKEN,
+} from "@kaviar/security-mongo-bundle";
 
 export default (config: IXPasswordBundleConfig) => {
   const {
@@ -20,11 +23,23 @@ export default (config: IXPasswordBundleConfig) => {
   if (queries.me) {
     resolvers.me = [
       X.CheckLoggedIn(),
-      (_, args, context) => {
+      (_, args, context, ast) => {
         const userId = (context as any).userId;
-        const securityService = context.container.get(SecurityService);
+        const usersCollection = context.container.get<UsersCollection<any>>(
+          USERS_COLLECTION_TOKEN
+        );
 
-        return securityService.findUserById(userId);
+        return usersCollection.queryOneGraphQL(ast, {
+          filters: {
+            _id: userId,
+          },
+          intersect: {
+            _id: 1,
+            email: 1,
+            roles: 1,
+            profile: 1,
+          },
+        });
       },
     ];
   }

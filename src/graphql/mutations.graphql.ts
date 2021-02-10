@@ -98,7 +98,7 @@ export default (config: IXPasswordBundleConfig) => {
       /* GraphQL */ `verifyEmail(input: VerifyEmailInput!): VerifyEmailResponse!`,
       /* GraphQL */ `
         input VerifyEmailInput {
-          username: String!
+          username: String
           token: String!
         }
 

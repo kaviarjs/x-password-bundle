@@ -201,43 +201,56 @@ export class XPasswordService implements IXPasswordService {
   }
 
   async verifyEmail(input: VerifyEmailInput): Promise<{ token: string }> {
-    const userId = await this.passwordService.findUserIdByUsername(
-      input.username
+    if (input.username) {
+      // This one is optional
+      const userId = await this.passwordService.findUserIdByUsername(
+        input.username
+      );
+
+      throw new Error("invalid-username");
+    }
+
+    const result = await this.securityService.findThroughAuthenticationStrategy(
+      this.passwordService.method,
+      {
+        emailVerificationToken: input.token,
+      }
     );
 
-    const userPasswordData = await this.passwordService.getData(userId, {
-      emailVerificationToken: 1,
-    });
+    if (!result) {
+      throw new InvalidTokenException({
+        context: "email-verification",
+      });
+    }
 
-    if (input.token === userPasswordData.emailVerificationToken) {
+    if (input.token === result.strategy.emailVerificationToken) {
       // When token matches successfully
-      await this.passwordService.updateData(userId, {
+      await this.passwordService.updateData(result.userId, {
         isEmailVerified: true,
         emailVerificationToken: null,
       });
 
       const { requiresEmailVerificationBeforeLoggingIn } = this.config;
       if (requiresEmailVerificationBeforeLoggingIn) {
-        await this.securityService.updateUser(userId, {
+        await this.securityService.updateUser(result.userId, {
           isEnabled: true,
         });
       }
 
       if (this.config.emails.sendWelcomeEmail) {
-        const userData = await this.securityService.findUserById(userId, {
-          profile: 1,
-        });
+        const userData = await this.securityService.findUserById(
+          result.userId,
+          {
+            profile: 1,
+          }
+        );
 
         this.sendWelcomeEmail(userData.profile.firstName, input.username);
       }
-    } else {
-      throw new InvalidTokenException({
-        context: "email-verification",
-      });
     }
 
     return {
-      token: await this.securityService.login(userId, {
+      token: await this.securityService.login(result.userId, {
         authenticationStrategy: this.passwordService.method,
       }),
     };
