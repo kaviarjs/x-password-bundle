@@ -55,5 +55,8 @@ export interface IXPasswordBundleConfig {
       forgotPassword: boolean;
       verifyEmail: boolean;
     };
+    queries: {
+      me: boolean;
+    };
   };
 }

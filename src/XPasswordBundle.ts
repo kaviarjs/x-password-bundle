@@ -49,6 +49,9 @@ export class XPasswordBundle extends Bundle<IXPasswordBundleConfig> {
         forgotPassword: true,
         verifyEmail: true,
       },
+      queries: {
+        me: true,
+      },
     },
   };
 
@@ -62,14 +65,13 @@ export class XPasswordBundle extends Bundle<IXPasswordBundleConfig> {
         type: this.config.services.XPasswordService,
       });
     }
-
-    const graphqlModule = createGraphQLModule(this.config);
-
-    const loader = this.container.get<Loader>(Loader);
-    loader.load(graphqlModule);
   }
 
   async init() {
+    const graphqlModule = createGraphQLModule(this.config);
+    const loader = this.container.get<Loader>(Loader);
+    loader.load(graphqlModule);
+
     // Ensure it's initialised and ready to serve
     this.container.get(XPasswordService);
   }
