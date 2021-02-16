@@ -8,14 +8,25 @@ import { IXPasswordBundleConfig } from "../defs";
 export function createGraphQLModule(
   config: IXPasswordBundleConfig
 ): ILoadOptions {
+  const typeDefs = [];
+  const resolvers = [];
+
+  const queriesTypeDefs = queriesTypeDefsCreator(config);
+  const queriesResolvers = queriesResolversCreator(config);
+
+  const mutationsTypeDefs = mutationsTypeDefsCreator(config);
+  const mutationsResolvers = mutationsResolversCreator(config);
+
+  if (queriesTypeDefs !== "") {
+    typeDefs.push(queriesTypeDefs);
+    resolvers.push(queriesResolvers);
+  }
+  if (mutationsTypeDefs !== "") {
+    typeDefs.push(mutationsTypeDefs);
+    resolvers.push(mutationsResolvers);
+  }
   return {
-    typeDefs: [
-      mutationsTypeDefsCreator(config),
-      queriesTypeDefsCreator(config),
-    ],
-    resolvers: [
-      mutationsResolversCreator(config),
-      queriesResolversCreator(config),
-    ],
+    typeDefs,
+    resolvers,
   };
 }
