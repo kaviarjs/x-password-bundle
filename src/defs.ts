@@ -42,9 +42,6 @@ export interface IXPasswordBundleConfig {
     sendWelcomeEmail: boolean;
   };
   requiresEmailVerificationBeforeLoggingIn: boolean;
-  /**
-   * This refers to the application, the web, the frontend, not the api.
-   */
   graphql: {
     mutations: {
       register: boolean;
