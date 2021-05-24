@@ -207,7 +207,9 @@ export class XPasswordService implements IXPasswordService {
         input.username
       );
 
-      throw new Error("invalid-username");
+      if (!userId) {
+        throw new Error("invalid-username");
+      }
     }
 
     const result = await this.securityService.findThroughAuthenticationStrategy(
