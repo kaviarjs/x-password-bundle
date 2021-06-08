@@ -1,4 +1,5 @@
 export { IXPasswordService } from "./services/IXPasswordService";
+export { XPasswordService } from "./services/XPasswordService";
 export * from "./constants";
 export * from "./inputs";
 export * from "./defs";
