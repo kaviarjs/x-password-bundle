@@ -1,7 +1,7 @@
 {
   "name": "@kaviar/x-password-bundle",
   "version": "1.2.3",
-  "description": "Password integration with Apollo Bundle using X-way.",
+  "description": "Password integration with Apollo Bundle using X-Framework.",
   "main": "dist/index.js",
   "repository": {
     "type": "git",
