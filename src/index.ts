@@ -4,5 +4,6 @@ export * from "./constants";
 export * from "./inputs";
 export * from "./defs";
 export * from "./exceptions";
+export * from "./emails";
 export * from "./graphql/mutations.resolvers";
 export { XPasswordBundle } from "./XPasswordBundle";

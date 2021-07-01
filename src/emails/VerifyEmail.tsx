@@ -7,22 +7,24 @@ export interface IVerifyEmailProps {
   regardsName: string;
 }
 
-export const VerifyEmail: IReactEmailTemplate<IVerifyEmailProps> = (props) => (
-  <div>
-    <p>Hello {props.name},</p>
-    <p>
-      Thank you for joining us! Please verify your email by clicking the link
-      below:
-    </p>
-    <p>
-      <a href={props.verifyEmailUrl}>{props.verifyEmailUrl}</a>
-    </p>
-    <p>
-      Regards, <br />
-      {props.regardsName}
-    </p>
-  </div>
-);
+export function VerifyEmail(props: IVerifyEmailProps) {
+  return (
+    <div>
+      <p>Hello {props.name},</p>
+      <p>
+        Thank you for joining us! Please verify your email by clicking the link
+        below:
+      </p>
+      <p>
+        <a href={props.verifyEmailUrl}>{props.verifyEmailUrl}</a>
+      </p>
+      <p>
+        Regards, <br />
+        {props.regardsName}
+      </p>
+    </div>
+  );
+}
 
 VerifyEmail.subject = (props) => {
   return `Please verify your email!`;

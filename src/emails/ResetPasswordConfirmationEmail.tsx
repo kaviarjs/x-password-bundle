@@ -8,25 +8,27 @@ export interface IResetPasswordConfirmationEmailProps {
   regardsName: string;
 }
 
-export const ResetPasswordConfirmationEmail: IReactEmailTemplate<IResetPasswordConfirmationEmailProps> = (
-  props
-) => (
-  <div>
-    <p>Hello {props.name},</p>
-    <p>Your password has been reset: {props.username}.</p>
-    <p>
-      If this was not you, please inform us as soon as possible, otherwise feel
-      free to login:
-    </p>
-    <p>
-      <a href={props.applicationUrl}>{props.applicationUrl}</a>
-    </p>
-    <p>
-      Regards, <br />
-      {props.regardsName}
-    </p>
-  </div>
-);
+export function ResetPasswordConfirmationEmail(
+  props: IResetPasswordConfirmationEmailProps
+) {
+  return (
+    <div>
+      <p>Hello {props.name},</p>
+      <p>Your password has been reset: {props.username}.</p>
+      <p>
+        If this was not you, please inform us as soon as possible, otherwise
+        feel free to login:
+      </p>
+      <p>
+        <a href={props.applicationUrl}>{props.applicationUrl}</a>
+      </p>
+      <p>
+        Regards, <br />
+        {props.regardsName}
+      </p>
+    </div>
+  );
+}
 
 ResetPasswordConfirmationEmail.subject = (props) => {
   return `Your password has been reset!`;
