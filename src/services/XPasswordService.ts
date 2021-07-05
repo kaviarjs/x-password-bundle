@@ -247,7 +247,10 @@ export class XPasswordService implements IXPasswordService {
           }
         );
 
-        this.sendWelcomeEmail(userData.profile.firstName, input.username);
+        this.sendWelcomeEmail(
+          userData.profile.firstName,
+          userData.password?.username
+        );
       }
     }
 
