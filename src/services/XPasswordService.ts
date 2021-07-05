@@ -244,6 +244,7 @@ export class XPasswordService implements IXPasswordService {
           result.userId,
           {
             profile: 1,
+            password: 1,
           }
         );
 
